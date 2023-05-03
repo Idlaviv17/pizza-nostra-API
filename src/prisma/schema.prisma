@@ -1,0 +1,133 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("LOCAL_DATABASE_URL")
+}
+
+model administrador {
+  id_administrador Int      @id @default(autoincrement())
+  apellidos        String   @db.VarChar(200)
+  correo           String   @unique(map: "correo") @db.VarChar(254)
+  domicilio        String?  @db.VarChar(300)
+  estado           Boolean  @default(false)
+  fecha_nacimiento DateTime @db.Date
+  nombre           String   @db.VarChar(200)
+  rfc              String   @unique(map: "rfc") @db.VarChar(13)
+  telefono         String   @unique(map: "telefono") @db.VarChar(10)
+}
+
+model dia_trabajado {
+  id_dia_trabajado       Int                      @id @default(autoincrement())
+  fecha                  DateTime                 @db.Date
+  hora_entrada           DateTime                 @db.Time(3)
+  hora_salida            DateTime                 @db.Time(3)
+  id_empleado            Int?
+  empleado               empleado?                @relation(fields: [id_empleado], references: [id_empleado], onDelete: NoAction, onUpdate: NoAction, map: "FK_dia_trabajado_id_empleado")
+  empleado_dia_trabajado empleado_dia_trabajado[]
+
+  @@index([id_empleado], map: "FK_dia_trabajado_id_empleado")
+}
+
+model empleado {
+  id_empleado                                                           Int                      @id @default(autoincrement())
+  apellidos                                                             String                   @db.VarChar(200)
+  correo                                                                String                   @unique(map: "correo") @db.VarChar(254)
+  domicilio                                                             String?                  @db.VarChar(300)
+  estado                                                                Boolean                  @default(false)
+  fecha_nacimiento                                                      DateTime                 @db.Date
+  nombre                                                                String                   @db.VarChar(200)
+  rfc                                                                   String                   @unique(map: "rfc") @db.VarChar(13)
+  telefono                                                              String                   @unique(map: "telefono") @db.VarChar(10)
+  id_periodo_vacacional                                                 Int?
+  dia_trabajado                                                         dia_trabajado[]
+  periodo_vacacional_empleado_id_periodo_vacacionalToperiodo_vacacional periodo_vacacional?      @relation("empleado_id_periodo_vacacionalToperiodo_vacacional", fields: [id_periodo_vacacional], references: [id_periodo_vacacional], onDelete: NoAction, onUpdate: NoAction, map: "FK_empleado_id_periodo_vacacional")
+  empleado_dia_trabajado                                                empleado_dia_trabajado[]
+  empleado_horario                                                      empleado_horario[]
+  empleado_pago                                                         empleado_pago[]
+  horario                                                               horario[]
+  pago                                                                  pago[]
+  periodo_vacacional_periodo_vacacional_id_empleadoToempleado           periodo_vacacional[]     @relation("periodo_vacacional_id_empleadoToempleado")
+
+  @@index([id_periodo_vacacional], map: "FK_empleado_id_periodo_vacacional")
+}
+
+model empleado_dia_trabajado {
+  Empleado_id_empleado            Int
+  diasTrabajados_id_dia_trabajado Int
+  empleado                        empleado      @relation(fields: [Empleado_id_empleado], references: [id_empleado], onDelete: NoAction, onUpdate: NoAction, map: "FK_empleado_dia_trabajado_Empleado_id_empleado")
+  dia_trabajado                   dia_trabajado @relation(fields: [diasTrabajados_id_dia_trabajado], references: [id_dia_trabajado], onDelete: NoAction, onUpdate: NoAction, map: "empleadodiatrabajadodiasTrabajadosid_dia_trabajado")
+
+  @@id([Empleado_id_empleado, diasTrabajados_id_dia_trabajado])
+  @@index([diasTrabajados_id_dia_trabajado], map: "empleadodiatrabajadodiasTrabajadosid_dia_trabajado")
+}
+
+model empleado_horario {
+  Empleado_id_empleado Int
+  horario_id_horario   Int
+  empleado             empleado @relation(fields: [Empleado_id_empleado], references: [id_empleado], onDelete: NoAction, onUpdate: NoAction, map: "FK_empleado_horario_Empleado_id_empleado")
+  horario              horario  @relation(fields: [horario_id_horario], references: [id_horario], onDelete: NoAction, onUpdate: NoAction, map: "FK_empleado_horario_horario_id_horario")
+
+  @@id([Empleado_id_empleado, horario_id_horario])
+  @@index([horario_id_horario], map: "FK_empleado_horario_horario_id_horario")
+}
+
+model empleado_pago {
+  Empleado_id_empleado Int
+  pagos_id_pago        Int
+  empleado             empleado @relation(fields: [Empleado_id_empleado], references: [id_empleado], onDelete: NoAction, onUpdate: NoAction, map: "FK_empleado_pago_Empleado_id_empleado")
+  pago                 pago     @relation(fields: [pagos_id_pago], references: [id_pago], onDelete: NoAction, onUpdate: NoAction, map: "FK_empleado_pago_pagos_id_pago")
+
+  @@id([Empleado_id_empleado, pagos_id_pago])
+  @@index([pagos_id_pago], map: "FK_empleado_pago_pagos_id_pago")
+}
+
+model horario {
+  id_horario       Int                @id @default(autoincrement())
+  dia              DateTime           @db.DateTime(0)
+  hora_fin         DateTime           @db.Date
+  hora_inicio      DateTime           @db.Date
+  id_empleado      Int?
+  empleado_horario empleado_horario[]
+  empleado         empleado?          @relation(fields: [id_empleado], references: [id_empleado], onDelete: NoAction, onUpdate: NoAction, map: "FK_horario_id_empleado")
+
+  @@index([id_empleado], map: "FK_horario_id_empleado")
+}
+
+model pago {
+  id_pago          Int             @id @default(autoincrement())
+  comentario       String?         @db.VarChar(300)
+  estado           String          @db.VarChar(10)
+  fecha            DateTime        @db.Date
+  fin_periodo      DateTime        @db.Date
+  horas_trabajadas Int?
+  inicio_periodo   DateTime        @db.Date
+  id_empleado      Int?
+  id_salario       Int?
+  empleado_pago    empleado_pago[]
+  empleado         empleado?       @relation(fields: [id_empleado], references: [id_empleado], onDelete: NoAction, onUpdate: NoAction, map: "FK_pago_id_empleado")
+  salario          salario?        @relation(fields: [id_salario], references: [id_salario], onDelete: NoAction, onUpdate: NoAction, map: "FK_pago_id_salario")
+
+  @@index([id_empleado], map: "FK_pago_id_empleado")
+  @@index([id_salario], map: "FK_pago_id_salario")
+}
+
+model periodo_vacacional {
+  id_periodo_vacacional                                       Int        @id @default(autoincrement())
+  fecha_final                                                 DateTime   @db.Date
+  fecha_inicio                                                DateTime   @db.Date
+  id_empleado                                                 Int?
+  empleado_empleado_id_periodo_vacacionalToperiodo_vacacional empleado[] @relation("empleado_id_periodo_vacacionalToperiodo_vacacional")
+  empleado_periodo_vacacional_id_empleadoToempleado           empleado?  @relation("periodo_vacacional_id_empleadoToempleado", fields: [id_empleado], references: [id_empleado], onDelete: NoAction, onUpdate: NoAction, map: "FK_periodo_vacacional_id_empleado")
+
+  @@index([id_empleado], map: "FK_periodo_vacacional_id_empleado")
+}
+
+model salario {
+  id_salario     Int    @id @default(autoincrement())
+  coste_por_hora Float  @db.Float
+  rol            String @unique(map: "rol") @db.VarChar(100)
+  pago           pago[]
+}
