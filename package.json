@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
-    "dev": "nodemon src/index.js"
+    "start": "node src/primary.js",
+    "dev": "nodemon src/primary.js"
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +20,8 @@
     "schema": "src/prisma/schema.prisma"
   },
   "devDependencies": {
+    "loadtest": "^5.2.0",
     "prisma": "^4.13.0"
-  }
+  },
+  "type": "module"
 }

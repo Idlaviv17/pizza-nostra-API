@@ -1,5 +1,5 @@
-const { PrismaClient } = require('@prisma/client');
-const express = require('express');
+import { PrismaClient } from '@prisma/client';
+import express from 'express';
 
 const prisma = new PrismaClient();
 const pagosRouter = express.Router();
@@ -117,4 +117,4 @@ pagosRouter.delete('/:id', async (req, res) => {
   }
 });
 
-module.exports = pagosRouter;
+export default pagosRouter;

@@ -1,5 +1,5 @@
-const { PrismaClient } = require('@prisma/client');
-const express = require('express');
+import { PrismaClient } from '@prisma/client';
+import express from 'express';
 
 const prisma = new PrismaClient();
 const salariosRouter = express.Router();
@@ -87,4 +87,4 @@ salariosRouter.delete('/:id', async (req, res) => {
   }
 });
 
-module.exports = salariosRouter;
+export default salariosRouter;
