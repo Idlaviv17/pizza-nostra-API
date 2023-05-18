@@ -1,13 +1,15 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import morgan from 'morgan';
+import cors from 'cors';
 
 import pagosRouter from './controllers/pagos.js';
 import salariosRouter from './controllers/salarios.js';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
+app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 
