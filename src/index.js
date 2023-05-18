@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import cors from 'cors';
 
+import authRouter from './controllers/auth.js';
 import pagosRouter from './controllers/pagos.js';
 import salariosRouter from './controllers/salarios.js';
 
@@ -22,6 +23,7 @@ app.get('/heavy', (req, res) => {
   res.send(`The result of the CPU intensive task is ${total}\n`);
 });
 
+app.use('/api/auth', authRouter);
 // Routers for CRUD operations to database
 app.use('/api/pagos', pagosRouter);
 app.use('/api/salarios', salariosRouter);

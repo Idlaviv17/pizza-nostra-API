@@ -131,3 +131,8 @@ model salario {
   rol            String @unique(map: "rol") @db.VarChar(100)
   pago           pago[]
 }
+
+model usuario {
+  nombre   String @id @db.VarChar(100)
+  password String @db.VarChar(100)
+}
